@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Definitely Google</title>
+  <style>
+    :root {
+      --text: #202124;
+      --muted: #5f6368;
+      --link: #1a0dab;
+      --visited: #681da8;
+      --border: #dfe1e5;
+      --bg: #ffffff;
+      --chip: #f1f3f4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+    header {
+      padding: 28px 16px 10px;
+      display: flex;
+      justify-content: center;
+    }
+    .wrap {
+      width: min(920px, 100%);
+      padding: 0 12px 40px;
+      margin: 0 auto;
+    }
+    .brand {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2px;
+      margin: 14px 0 18px;
+      font-size: 64px;
+      font-weight: 700;
+      letter-spacing: -2px;
+      user-select: none;
+    }
+    .brand span:nth-child(1){ color:#4285F4; }
+    .brand span:nth-child(2){ color:#EA4335; }
+    .brand span:nth-child(3){ color:#FBBC05; }
+    .brand span:nth-child(4){ color:#4285F4; }
+    .brand span:nth-child(5){ color:#34A853; }
+    .brand span:nth-child(6){ color:#EA4335; }
+
+    .searchbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 14px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+      background: #fff;
+    }
+    .searchbar:focus-within {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      border-color: #c9cccf;
+    }
+    .icon {
+      width: 18px;
+      height: 18px;
+      fill: var(--muted);
+      flex: 0 0 auto;
+    }
+    input[type="search"] {
+      border: 0;
+      outline: none;
+      font-size: 16px;
+      width: 100%;
+    }
+    .actions {
+      margin: 18px 0 8px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    button {
+      border: 1px solid transparent;
+      background: var(--chip);
+      padding: 9px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #3c4043;
+    }
+    button:hover {
+      border-color: var(--border);
+      box-shadow: 0 1px 1px rgba(0,0,0,0.08);
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 18px 0 10px;
+    }
+    .results {
+      margin-top: 6px;
+    }
+    .result {
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .result:last-child { border-bottom: none; }
+    .url {
+      color: #202124;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .title a {
+      color: var(--link);
+      text-decoration: none;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+    .title a:visited { color: var(--visited); }
+    .title a:hover { text-decoration: underline; }
+    .snippet {
+      color: #4d5156;
+      font-size: 14px;
+      line-height: 1.45;
+      margin-top: 4px;
+      max-width: 720px;
+    }
+
+    .footer {
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 520px) {
+      .brand { font-size: 48px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand" aria-label="logo">
+      <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+    </div>
+
+    <!-- Using GET so the URL becomes ...?query=... -->
+    <form id="searchForm" method="GET" action="" autocomplete="off">
+      <div class="searchbar">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 1 0-.7.7l.3.3v.8L20 21.5 21.5 20l-6-6zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
+        </svg>
+        <input id="query" name="query" type="search" placeholder="Search" />
+      </div>
+
+      <div class="actions">
+        <button type="submit">Search</button>
+        <button type="button" id="luckyBtn">I'm Feeling Lucky</button>
+      </div>
+    </form>
+
+    <div class="meta" id="meta"></div>
+    <div class="results" id="results" aria-live="polite"></div>
+
+    <div class="footer">
+      Tip: open this page as <code>fake-google.html?query=test</code> to prefill the search box.
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+  
+    const $ = (sel) => document.querySelector(sel);
+  
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;",
+        '"': "&quot;", "'": "&#39;"
+      }[c]));
+    }
+  
+    // --- helpers for more varied fake SERP ---
+    const rand = (min, max) => Math.random() * (max - min) + min;
+    const randi = (min, max) => Math.floor(rand(min, max + 1));
+    const pick = (arr) => arr[randi(0, arr.length - 1)];
+    const chance = (p) => Math.random() < p;
+  
+    function humanNumber(n) {
+      // 1234 -> "1,234"
+      return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+  
+    function humanSeconds(s) {
+      // show like 0.27 or 1.4
+      return s < 1 ? s.toFixed(2) : s.toFixed(1);
+    }
+  
+    function slugify(s) {
+      return s
+        .toLowerCase()
+        .trim()
+        .replace(/['"]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }
+  
+    function sampleWordsFromQuery(q) {
+      const parts = q.split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return [];
+      // keep some words, drop some, add minor variation
+      const kept = parts.filter(() => chance(0.75));
+      return kept.length ? kept : [pick(parts)];
+    }
+  
+    function makeSnippet(query, kind) {
+      const qWords = sampleWordsFromQuery(query);
+      const qBit = qWords.length ? qWords.join(" ") : query;
+  
+      const openers = [
+        "Learn how to",
+        "A practical guide to",
+        "Everything you need to know about",
+        "Notes and examples for",
+        "Step-by-step instructions for",
+        "A quick reference for",
+        "Common pitfalls with",
+        "Updated overview of"
+      ];
+  
+      const tails = [
+        "Includes examples, edge cases, and troubleshooting.",
+        "Covers setup, configuration, and best practices.",
+        "With benchmarks, FAQs, and a short checklist.",
+        "Plus links to related tools and documentation.",
+        "Featuring real-world use cases and templates.",
+        "Includes a concise summary and next steps."
+      ];
+  
+      const mid = [
+        "in production environments",
+        "for small teams",
+        "for high-traffic systems",
+        "without breaking changes",
+        "with minimal configuration",
+        "with security in mind"
+      ];
+  
+      const sentences = [];
+      if (kind === "docs") {
+        sentences.push(`${pick(openers)} ${qBit} ${pick(mid)}.`);
+        if (chance(0.7)) sentences.push(pick(tails));
+      } else if (kind === "blog") {
+        sentences.push(`${pick(openers)} ${qBit}.`);
+        sentences.push(chance(0.5)
+          ? `We compare approaches and highlight trade-offs ${pick(mid)}.`
+          : `Includes code samples and a short migration path ${pick(mid)}.`
+        );
+        if (chance(0.4)) sentences.push(pick(tails));
+      } else if (kind === "repo") {
+        sentences.push(`Open-source project related to ${qBit}.`);
+        sentences.push(chance(0.6)
+          ? "Stars, issues, and recent commits included."
+          : "Includes README, examples, and CI configuration."
+        );
+      } else if (kind === "pdf") {
+        sentences.push(`PDF: A condensed report on ${qBit}.`);
+        sentences.push(chance(0.6)
+          ? "Includes figures, tables, and a short appendix."
+          : "Contains a summary, methodology, and references."
+        );
+      } else {
+        sentences.push(`${pick(openers)} ${qBit}.`);
+        if (chance(0.5)) sentences.push(pick(tails));
+      }
+  
+      // vary length
+      const take = randi(1, Math.min(3, sentences.length));
+      return sentences.slice(0, take).join(" ");
+    }
+  
+    function makeSitelinks(query) {
+      const base = slugify(query) || "overview";
+      const candidates = [
+        { label: "Overview", path: `/${base}` },
+        { label: "Docs", path: `/${base}/docs` },
+        { label: "Examples", path: `/${base}` },
+        { label: "Pricing", path: `/${base}` },
+        { label: "Changelog", path: `/${base}` },
+        { label: "FAQ", path: `/${base}` },
+      ];
+      // return 2–4 sitelinks
+      const n = randi(2, 4);
+      const out = [];
+      const pool = [...candidates];
+      while (out.length < n && pool.length) {
+        out.push(pool.splice(randi(0, pool.length - 1), 1)[0]);
+      }
+      return out;
+    }
+  
+    // Fake results generator (varied)
+    function buildResults(q) {
+      const query = (q ?? "").trim();
+      const shown = query || "…";
+  
+      // total results: vary widely but deterministically-ish per query
+      const seedish = [...shown].reduce((a, c) => a + c.charCodeAt(0), 0);
+      const baseTotal = query ? (seedish * 137) : 1042;
+      const totalResults = query
+        ? (baseTotal % 50000000) + randi(1200, 250000)
+        : 10;
+  
+      // time: depends on query length
+      const time = query ? Math.max(0.12, rand(0.18, 1.35) + (query.length % 7) * 0.03) : 0.08;
+  
+      // render count: 7–12 (feels more organic than always 10)
+      const renderCount = query ? randi(7, 12) : 10;
+  
+      $("#meta").textContent = query
+        ? `About ${humanNumber(totalResults)} results (${humanSeconds(time)} seconds) for "${query}"`
+        : `Showing ${renderCount} results.`;
+  
+      const hosts = [
+        "web/expensive-saas",
+        "docs/expensive-saas",
+        "blog/expensive-saas",
+        "status/expensive-saas",
+        "support/expensive-saas",
+        "community/expensive-saas",
+        "github.com/expensive-saas",
+        "stackoverflow.com",
+        "medium.com",
+        "dev.to",
+        "example.com",
+      ];
+  
+      const kinds = [
+        { kind: "docs", weight: 30 },
+        { kind: "blog", weight: 22 },
+        { kind: "repo", weight: 16 },
+        { kind: "pdf", weight: 6 },
+        { kind: "generic", weight: 26 },
+      ];
+  
+      function pickWeighted(items) {
+        const total = items.reduce((a, x) => a + x.weight, 0);
+        let t = Math.random() * total;
+        for (const it of items) {
+          t -= it.weight;
+          if (t <= 0) return it.kind;
+        }
+        return items[items.length - 1].kind;
+      }
+  
+      const titleTemplates = {
+        docs: [
+          (q) => `${q} — Documentation`,
+          (q) => `API Reference: ${q}`,
+          (q) => `${q}: Getting started`,
+          (q) => `How to configure ${q}`,
+        ],
+        blog: [
+          (q) => `${q} in practice: patterns & pitfalls`,
+          (q) => `What we learned using ${q}`,
+          (q) => `${q} vs alternatives — trade-offs`,
+          (q) => `A short guide to ${q}`,
+        ],
+        repo: [
+          (q) => `${slugify(q) || "project"} · GitHub`,
+          (q) => `${q} examples and starter kit`,
+          (q) => `awesome-${slugify(q) || "stuff"}`,
+        ],
+        pdf: [
+          (q) => `${q} — Report (PDF)`,
+          (q) => `${q}: Whitepaper (PDF)`,
+        ],
+        generic: [
+          (q) => `${q} — Official site`,
+          (q) => `${q} tools, tips, and resources`,
+          (q) => `${q} (overview)`,
+          (q) => `Best practices for ${q}`,
+        ]
+      };
+  
+      function makePath(kind, query) {
+        const s = slugify(query) || "home";
+        const picks = {
+          docs: [`/docs/${s}`, `/docs/${s}/quickstart`, `/docs/${s}/reference`, `/kb/${s}`],
+          blog: [`/blog/${s}`, `/posts/${s}`, `/${s}/case-study`, `/writing/${s}`],
+          repo: [`/${s}`, `/${s}/examples`, `/${s}/starter`, `/${s}/templates`],
+          pdf: [`/downloads/${s}.pdf`, `/assets/${s}.pdf`, `/papers/${s}.pdf`],
+          generic: [`/${s}`, `/search/${encodeURIComponent(query)}`, `/${s}/overview`, `/${s}/pricing`],
+        };
+        return pick(picks[kind] || picks.generic);
+      }
+  
+      function maybeDate() {
+        if (!chance(0.35)) return "";
+        const daysAgo = randi(3, 1200);
+        const d = new Date(Date.now() - daysAgo * 86400000);
+        // e.g., "Jan 2025"
+        const m = d.toLocaleString(undefined, { month: "short" });
+        return `${m} ${d.getFullYear()}`;
+      }
+  
+      function maybeBadge(kind) {
+        if (kind === "pdf") return "PDF";
+        if (chance(0.08)) return "Ad";
+        if (chance(0.10)) return "Cached";
+        return "";
+      }
+  
+      // optional featured snippet (only when query exists)
+      let featuredHtml = "";
+      if (query && chance(0.28)) {
+        const bullets = [
+          `Definition: ${query} is commonly used to describe a specific approach or toolchain.`,
+          `Typical use: teams adopt it to reduce setup time and standardize workflows.`,
+          `Key concern: validate assumptions and measure outcomes before scaling.`
+        ];
+        featuredHtml = `
+          <div class="result" style="border-bottom:1px solid #f0f0f0; padding-bottom:16px;">
+            <div class="url" style="color:var(--muted)">Featured snippet</div>
+            <div class="title" style="font-size:20px; line-height:1.25; margin:2px 0 6px;">
+              ${escapeHtml(query)} — quick summary
+            </div>
+            <div class="snippet">
+              <ul style="margin:8px 0 0 18px; padding:0;">
+                ${bullets.slice(0, randi(2, 3)).map(b => `<li>${escapeHtml(b)}</li>`).join("")}
+              </ul>
+            </div>
+          </div>
+        `;
+      }
+  
+      const items = Array.from({ length: renderCount }, (_, i) => {
+        const kind = query ? pickWeighted(kinds) : "generic";
+        const host = pick(hosts);
+        const path = query ? makePath(kind, query) : "/";
+        const scheme = chance(0.75) ? "https" : "http";
+        const url = `http://localhost:8000/expensive-saas/`;
+  
+        const titleFn = pick(titleTemplates[kind] || titleTemplates.generic);
+        const titleBase = query ? titleFn(query) : `Result #${i + 1}`;
+  
+        const badge = query ? maybeBadge(kind) : "";
+        const date = query ? maybeDate() : "";
+        const rating = (query && chance(0.18))
+          ? `${(rand(3.6, 5.0)).toFixed(1)} ★ · ${humanNumber(randi(50, 12000))} reviews`
+          : "";
+  
+        const hasSitelinks = query && chance(0.22) && (i < 4); // more common near top
+        const sitelinks = hasSitelinks ? makeSitelinks(query) : [];
+  
+        return {
+          url,
+          title: badge ? `${titleBase} (${badge})` : titleBase,
+          snippet: makeSnippet(query || `result ${i + 1}`, kind),
+          sitelinks,
+          metaBits: [date, rating].filter(Boolean)
+        };
+      });
+  
+      const html = featuredHtml + items.map(r => `
+        <div class="result">
+          <div class="url">${escapeHtml(r.url)}${r.metaBits.length ? ` <span style="color:var(--muted)">· ${escapeHtml(r.metaBits.join(" · "))}</span>` : ""}</div>
+          <div class="title"><a href="${r.url}">${escapeHtml(r.title)}</a></div>
+          <div class="snippet">${escapeHtml(r.snippet)}</div>
+          ${r.sitelinks.length ? `
+            <div class="snippet" style="margin-top:6px; color:var(--muted);">
+              ${r.sitelinks.map(s => `<a href="${r.url}" style="color:var(--link); text-decoration:none; margin-right:12px;">${escapeHtml(s.label)}</a>`).join("")}
+            </div>
+          ` : ""}
+        </div>
+      `).join("");
+  
+      $("#results").innerHTML = html;
+    }
+  
+    // Read GET param ?query=...
+    const params = new URLSearchParams(window.location.search);
+    const initialQuery = params.get("query") ?? "";
+    $("#query").value = initialQuery;
+  
+    buildResults(initialQuery);
+  
+    $("#luckyBtn").addEventListener("click", () => {
+      const q = $("#query").value.trim();
+      if (!q) return;
+      const u = new URL(window.location.href);
+      u.searchParams.set("query", q);
+      history.replaceState(null, "", u.toString());
+      buildResults(q);
+    });
+  
+    $("#searchForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const q = $("#query").value.trim();
+      const u = new URL(window.location.href);
+      if (q) u.searchParams.set("query", q);
+      else u.searchParams.delete("query");
+      history.replaceState(null, "", u.toString());
+      buildResults(q);
+    });
+  </script>
+</body>
+</html>

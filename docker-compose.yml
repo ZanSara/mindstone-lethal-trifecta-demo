@@ -1,0 +1,35 @@
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    environment:
+      GENERIC_TIMEZONE: "Europe/Lisbon"
+      TZ: "Europe/Lisbon"
+      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    restart: unless-stopped
+    depends_on:
+      - web
+    network_mode: host
+
+  web:
+    image: python:3.12-alpine
+    container_name: prompt-injection-server
+    working_dir: /srv/www
+    volumes:
+      - ./prompt-injection-source:/srv/www:ro
+    command: python -m http.server 8000 --bind 0.0.0.0
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    network_mode: host
+
+
+volumes:
+  n8n_data:
+    name: n8n_data

@@ -1,0 +1,787 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ExpensiveSaaS API",
+    "version": "2.4.0",
+    "description": "OpenAPI specification derived for ExpensiveSaaS APIs. REST + JSON, bearer auth, idempotent writes, cursor pagination, and webhook events."
+  },
+  "servers": [
+    { "url": "http://localhost:5678/webhook/", "description": "Expensive SaaS Sandbox Environment" }
+  ],
+  "tags": [
+    { "name": "Customers" },
+    { "name": "Projects" },
+    { "name": "Usage" },
+    { "name": "Invoices" },
+    { "name": "Payments" },
+    { "name": "Subscriptions" },
+    { "name": "Webhooks" }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/customer": {
+      "post": {
+        "tags": ["Customers"],
+        "summary": "Create customer",
+        "operationId": "createCustomer",
+        "parameters": [
+          { "$ref": "#/components/parameters/XRequestId" },
+          { "$ref": "#/components/parameters/IdempotencyKey" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CustomerCreateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Customer created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CustomerCreateResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/UnprocessableEntity" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "503": { "$ref": "#/components/responses/ServiceUnavailable" }
+        }
+      }
+    },
+    "/customers": {
+      "get": {
+        "tags": ["Customers"],
+        "summary": "List customers",
+        "operationId": "listCustomer",
+        "parameters": [
+          { "$ref": "#/components/parameters/XRequestId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customer list returned",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CustomersResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/UnprocessableEntity" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "503": { "$ref": "#/components/responses/ServiceUnavailable" }
+        }
+      }
+    },
+    "/customer/{id}": {
+      "get": {
+        "tags": ["Customers"],
+        "summary": "Get customer",
+        "operationId": "getCustomer",
+        "parameters": [
+          { "$ref": "#/components/parameters/CustomerId" },
+          { "$ref": "#/components/parameters/XRequestId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customer",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Customer" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "503": { "$ref": "#/components/responses/ServiceUnavailable" }
+        }
+      }
+    },
+    "/customer/{id}/summary": {
+      "get": {
+        "tags": ["Customers"],
+        "summary": "Get customer's summary. Uses LLMs and user's data to build a detailed analysis of the user's behavior over time.",
+        "operationId": "getCustomerSummary",
+        "parameters": [
+          { "$ref": "#/components/parameters/CustomerId" },
+          { "$ref": "#/components/parameters/ApiKey" },
+          { "$ref": "#/components/parameters/XRequestId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customer",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Customer" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "503": { "$ref": "#/components/responses/ServiceUnavailable" }
+        }
+      }
+    },
+    "/projects": {
+      "post": {
+        "tags": ["Projects"],
+        "summary": "Create project",
+        "operationId": "createProject",
+        "parameters": [
+          { "$ref": "#/components/parameters/XRequestId" },
+          { "$ref": "#/components/parameters/IdempotencyKey" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ProjectCreateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Project created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Project" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/UnprocessableEntity" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "503": { "$ref": "#/components/responses/ServiceUnavailable" }
+        }
+      }
+    },
+    "/usage/events": {
+      "post": {
+        "tags": ["Usage"],
+        "summary": "Ingest usage event",
+        "operationId": "createUsageEvent",
+        "parameters": [
+          { "$ref": "#/components/parameters/XRequestId" },
+          { "$ref": "#/components/parameters/IdempotencyKey" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UsageEventCreateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UsageEventAccepted" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/UnprocessableEntity" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "503": { "$ref": "#/components/responses/ServiceUnavailable" }
+        }
+      }
+    },
+    "/invoices/preview": {
+      "post": {
+        "tags": ["Invoices"],
+        "summary": "Preview invoice",
+        "operationId": "previewInvoice",
+        "parameters": [
+          { "$ref": "#/components/parameters/XRequestId" },
+          { "$ref": "#/components/parameters/IdempotencyKey" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/InvoicePreviewRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Invoice preview",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/InvoicePreview" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/UnprocessableEntity" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "503": { "$ref": "#/components/responses/ServiceUnavailable" }
+        }
+      }
+    },
+    "/invoices": {
+      "get": {
+        "tags": ["Invoices"],
+        "summary": "List invoices",
+        "operationId": "listInvoices",
+        "parameters": [
+          { "$ref": "#/components/parameters/XRequestId" },
+          { "name": "customer_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "status", "in": "query", "schema": { "type": "string" } },
+          { "$ref": "#/components/parameters/Sort" },
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/StartingAfter" }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of invoices",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/InvoiceList" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "503": { "$ref": "#/components/responses/ServiceUnavailable" }
+        }
+      }
+    },
+    "/payments/intents": {
+      "post": {
+        "tags": ["Payments"],
+        "summary": "Create payment intent",
+        "operationId": "createPaymentIntent",
+        "parameters": [
+          { "$ref": "#/components/parameters/XRequestId" },
+          { "$ref": "#/components/parameters/IdempotencyKey" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PaymentIntentCreateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Payment intent created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PaymentIntent" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/UnprocessableEntity" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "503": { "$ref": "#/components/responses/ServiceUnavailable" }
+        }
+      }
+    },
+    "/subscriptions/{id}": {
+      "put": {
+        "tags": ["Subscriptions"],
+        "summary": "Update subscription",
+        "operationId": "updateSubscription",
+        "parameters": [
+          { "$ref": "#/components/parameters/SubscriptionId" },
+          { "$ref": "#/components/parameters/XRequestId" },
+          { "$ref": "#/components/parameters/IdempotencyKey" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SubscriptionUpdateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Subscription updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Subscription" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/UnprocessableEntity" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "503": { "$ref": "#/components/responses/ServiceUnavailable" }
+        }
+      }
+    }
+  },
+  "webhooks": {
+    "invoice.payment_succeeded": {
+      "post": {
+        "tags": ["Webhooks"],
+        "summary": "Invoice payment succeeded",
+        "parameters": [
+          {
+            "name": "X-ExpensiveSaaS-Signature",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "HMAC-SHA256 signature of the raw request body."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WebhookEvent" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Webhook received" },
+          "400": { "description": "Invalid signature or payload" }
+        }
+      }
+    },
+    "invoice.payment_failed": {
+      "post": {
+        "tags": ["Webhooks"],
+        "summary": "Invoice payment failed",
+        "parameters": [
+          {
+            "name": "X-ExpensiveSaaS-Signature",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WebhookEvent" } } }
+        },
+        "responses": {
+          "200": { "description": "Webhook received" },
+          "400": { "description": "Invalid signature or payload" }
+        }
+      }
+    },
+    "invoice.finalized": {
+      "post": {
+        "tags": ["Webhooks"],
+        "summary": "Invoice finalized",
+        "parameters": [
+          {
+            "name": "X-ExpensiveSaaS-Signature",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WebhookEvent" } } }
+        },
+        "responses": {
+          "200": { "description": "Webhook received" },
+          "400": { "description": "Invalid signature or payload" }
+        }
+      }
+    },
+    "subscription.renewed": {
+      "post": {
+        "tags": ["Webhooks"],
+        "summary": "Subscription renewed",
+        "parameters": [
+          {
+            "name": "X-ExpensiveSaaS-Signature",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WebhookEvent" } } }
+        },
+        "responses": {
+          "200": { "description": "Webhook received" },
+          "400": { "description": "Invalid signature or payload" }
+        }
+      }
+    },
+    "usage.threshold_exceeded": {
+      "post": {
+        "tags": ["Webhooks"],
+        "summary": "Usage threshold exceeded",
+        "parameters": [
+          {
+            "name": "X-ExpensiveSaaS-Signature",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WebhookEvent" } } }
+        },
+        "responses": {
+          "200": { "description": "Webhook received" },
+          "400": { "description": "Invalid signature or payload" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "API key" }
+    },
+    "parameters": {
+      "XRequestId": {
+        "name": "X-Request-Id",
+        "in": "header",
+        "required": false,
+        "schema": { "type": "string" }
+      },
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": false,
+        "schema": { "type": "string", "format": "uuid" }
+      },
+      "ApiKey": {
+        "name": "Api-Key",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string" }
+      },
+      "CustomerId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      "SubscriptionId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "integer", "minimum": 1, "maximum": 200, "default": 50 }
+      },
+      "StartingAfter": {
+        "name": "starting_after",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string" }
+      },
+      "Sort": {
+        "name": "sort",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string", "enum": ["created_at", "-created_at"], "default": "-created_at" }
+      }
+    },
+    "schemas": {
+      "IsoCountryCode2": { "type": "string", "minLength": 2, "maxLength": 2, "examples": ["PT"] },
+      "CurrencyCode": { "type": "string", "minLength": 3, "maxLength": 3, "examples": ["EUR"] },
+      "Metadata": { "type": "object", "additionalProperties": { "type": "string" } },
+      "BillingAddress": {
+        "type": "object",
+        "properties": {
+          "line1": { "type": "string" },
+          "line2": { "type": ["string", "null"] },
+          "city": { "type": "string" },
+          "state": { "type": ["string", "null"] },
+          "postal_code": { "type": "string" },
+          "country": { "$ref": "#/components/schemas/IsoCountryCode2" }
+        },
+        "required": ["line1", "city", "postal_code", "country"]
+      },
+      "CustomerCreateRequest": {
+        "type": "object",
+        "properties": {
+          "external_id": { "type": "string" },
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
+          "billing_address": { "$ref": "#/components/schemas/BillingAddress" },
+          "metadata": { "$ref": "#/components/schemas/Metadata" }
+        },
+        "required": ["name", "email", "currency"]
+      },
+      "CustomerCreateResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "status": { "type": "string", "enum": ["active", "inactive"] },
+          "created_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "status", "created_at"]
+      },
+      "Customer": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "external_id": { "type": ["string", "null"] },
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
+          "status": { "type": "string", "enum": ["active", "inactive", "deleted"] },
+          "delinquent": { "type": "boolean" },
+          "billing_address": { "$ref": "#/components/schemas/BillingAddress" },
+          "metadata": { "$ref": "#/components/schemas/Metadata" }
+        },
+        "required": ["id", "name", "email", "currency", "status", "delinquent"]
+      },
+      "CustomersResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Customer" } }
+        },
+        "required": ["data", "page"]
+      },
+      "ProjectCreateRequest": {
+        "type": "object",
+        "properties": {
+          "customer_id": { "type": "string" },
+          "name": { "type": "string" },
+          "plan_code": { "type": "string" },
+          "region": { "type": "string" },
+          "metadata": { "$ref": "#/components/schemas/Metadata" }
+        },
+        "required": ["customer_id", "name", "plan_code", "region"]
+      },
+      "Project": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "customer_id": { "type": "string" },
+          "name": { "type": "string" },
+          "plan_code": { "type": "string" },
+          "region": { "type": "string" },
+          "status": { "type": "string", "enum": ["active", "archived"] },
+          "created_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "customer_id", "name", "plan_code", "region", "status"]
+      },
+      "UsageDimensions": { "type": "object", "additionalProperties": { "type": "string" } },
+      "UsageEventCreateRequest": {
+        "type": "object",
+        "properties": {
+          "project_id": { "type": "string" },
+          "metric": { "type": "string" },
+          "quantity": { "type": "integer", "minimum": 0 },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "dedupe_key": { "type": ["string", "null"] },
+          "dimensions": { "$ref": "#/components/schemas/UsageDimensions" }
+        },
+        "required": ["project_id", "metric", "quantity", "timestamp"]
+      },
+      "UsageEventAccepted": {
+        "type": "object",
+        "properties": {
+          "accepted": { "type": "boolean" },
+          "event_id": { "type": "string" },
+          "ingestion_lag_ms": { "type": "integer", "minimum": 0 }
+        },
+        "required": ["accepted", "event_id", "ingestion_lag_ms"]
+      },
+      "InvoicePreviewRequest": {
+        "type": "object",
+        "properties": {
+          "customer_id": { "type": "string" },
+          "as_of": { "type": "string", "format": "date-time" },
+          "include_usage_until": { "type": "string", "format": "date-time" }
+        },
+        "required": ["customer_id"]
+      },
+      "InvoiceLineItem": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string" },
+          "amount": { "type": "number" }
+        },
+        "required": ["description", "amount"]
+      },
+      "InvoicePreview": {
+        "type": "object",
+        "properties": {
+          "subtotal": { "type": "number" },
+          "tax": { "type": "number" },
+          "total": { "type": "number" },
+          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
+          "line_items": { "type": "array", "items": { "$ref": "#/components/schemas/InvoiceLineItem" } }
+        },
+        "required": ["subtotal", "tax", "total", "currency", "line_items"]
+      },
+      "Invoice": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "customer_id": { "type": "string" },
+          "status": { "type": "string" },
+          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
+          "total": { "type": "number" },
+          "created_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "customer_id", "status", "currency", "total", "created_at"]
+      },
+      "PageInfo": {
+        "type": "object",
+        "properties": {
+          "has_more": { "type": "boolean" },
+          "next_cursor": { "type": ["string", "null"] }
+        },
+        "required": ["has_more"]
+      },
+      "InvoiceList": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Invoice" } },
+          "page": { "$ref": "#/components/schemas/PageInfo" }
+        },
+        "required": ["data", "page"]
+      },
+      "PaymentIntentCreateRequest": {
+        "type": "object",
+        "properties": {
+          "invoice_id": { "type": "string" },
+          "amount": { "type": "number" },
+          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
+          "payment_method": {
+            "type": "string",
+            "enum": ["card_on_file", "bank_transfer", "sepa_debit"]
+          }
+        },
+        "required": ["invoice_id", "amount", "currency", "payment_method"]
+      },
+      "PaymentIntent": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "invoice_id": { "type": "string" },
+          "amount": { "type": "number" },
+          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
+          "status": {
+            "type": "string",
+            "enum": ["requires_payment_method", "requires_confirmation", "processing", "succeeded", "failed", "canceled"]
+          },
+          "created_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "invoice_id", "amount", "currency", "status"]
+      },
+      "SubscriptionUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "plan_code": { "type": "string" },
+          "seats": { "type": "integer", "minimum": 0 },
+          "proration_mode": { "type": "string", "enum": ["none", "prorate_immediately", "prorate_next_invoice"] },
+          "renewal_term_months": { "type": "integer", "minimum": 1, "maximum": 60 }
+        },
+        "required": ["plan_code"]
+      },
+      "Subscription": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "customer_id": { "type": "string" },
+          "plan_code": { "type": "string" },
+          "seats": { "type": "integer" },
+          "status": { "type": "string", "enum": ["active", "paused", "canceled"] },
+          "renewal_term_months": { "type": "integer" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "customer_id", "plan_code", "status"]
+      },
+      "WebhookEvent": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "data": { "type": "object", "additionalProperties": true }
+        },
+        "required": ["id", "type", "created_at", "data"]
+      },
+      "ErrorEnvelope": {
+        "type": "object",
+        "properties": { "error": { "$ref": "#/components/schemas/ErrorObject" } },
+        "required": ["error"]
+      },
+      "ErrorObject": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string" },
+          "code": { "type": "string" },
+          "message": { "type": "string" },
+          "param": { "type": ["string", "null"] },
+          "request_id": { "type": ["string", "null"] },
+          "doc_url": { "type": ["string", "null"], "format": "uri" }
+        },
+        "required": ["type", "code", "message"]
+      }
+    },
+    "responses": {
+      "BadRequest": { "description": "Bad Request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
+      "Unauthorized": { "description": "Unauthorized", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
+      "Forbidden": { "description": "Forbidden", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
+      "NotFound": { "description": "Not Found", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
+      "Conflict": { "description": "Conflict", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
+      "UnprocessableEntity": { "description": "Unprocessable Entity", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
+      "TooManyRequests": { "description": "Too Many Requests", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
+      "InternalServerError": { "description": "Internal Server Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
+      "ServiceUnavailable": { "description": "Service Unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } }
+    }
+  }
+}

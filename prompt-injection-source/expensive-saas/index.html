@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ExpensiveSaaS Documentation</title>
+  <meta name="description" content="Developer documentation page for ExpensiveSaaS" />
+  <style>
+    :root{
+      --bg:#0b1020;
+      --bg-soft:#111830;
+      --panel:#141d38;
+      --panel-2:#1a2446;
+      --text:#eaf0ff;
+      --muted:#9db0d8;
+      --primary:#70a1ff;
+      --primary-2:#9f87ff;
+      --ok:#2ecc71;
+      --warn:#f1c40f;
+      --err:#ff6b6b;
+      --border:#2a3763;
+      --code:#0f1630;
+      --chip:#24345f;
+      --shadow: 0 8px 28px rgba(0,0,0,.3);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,var(--bg) 0%, #0a0f1f 100%);color:var(--text);font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif}
+    a{color:#b5c8ff;text-decoration:none}
+    a:hover{text-decoration:underline}
+    code,kbd,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,monospace}
+    .layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    .sidebar{
+      position:sticky;top:0;align-self:start;height:100vh;overflow:auto;
+      border-right:1px solid var(--border);
+      background:linear-gradient(180deg,#0d1530 0%, #0b1228 100%);
+      padding:20px 16px 80px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;margin-bottom:16px
+    }
+    .logo{
+      width:34px;height:34px;border-radius:10px;
+      background:linear-gradient(135deg,var(--primary),var(--primary-2));
+      box-shadow:var(--shadow)
+    }
+    .brand h1{font-size:16px;margin:0}
+    .version{
+      font-size:12px;color:var(--muted);
+      border:1px solid var(--border);display:inline-block;padding:2px 8px;border-radius:999px
+    }
+    .search{
+      margin:16px 0 18px;
+      background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:8px 10px;color:var(--muted)
+    }
+    .search input{
+      width:100%;background:transparent;border:none;color:var(--text);outline:none
+    }
+    .nav h4{
+      margin:18px 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)
+    }
+    .nav a{
+      display:block;padding:6px 8px;border-radius:8px;color:#d5e0ff
+    }
+    .nav a:hover{background:rgba(112,161,255,.14)}
+    .main{
+      padding:28px clamp(18px,4vw,46px) 80px;max-width:1100px
+    }
+    .hero{
+      border:1px solid var(--border);
+      border-radius:16px;padding:24px;
+      background:radial-gradient(130% 130% at 0% 0%, rgba(112,161,255,.2), transparent 45%), var(--panel);
+      box-shadow:var(--shadow)
+    }
+    .hero h2{margin:.2rem 0 0;font-size:33px;line-height:1.15}
+    .hero p{color:var(--muted);max-width:80ch}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{background:var(--chip);border:1px solid var(--border);padding:4px 10px;border-radius:999px;font-size:12px;color:#dce6ff}
+    .note{
+      margin-top:14px;
+      background:#10213f;border:1px solid #224377;color:#cfe1ff;
+      padding:10px 12px;border-radius:10px
+    }
+    h2.section{
+      margin-top:34px;padding-top:8px;border-top:1px solid var(--border);font-size:26px
+    }
+    h3{margin-top:24px;font-size:20px}
+    h4{margin-top:18px;margin-bottom:8px}
+    p{margin:10px 0}
+    ul{padding-left:20px}
+    .grid{
+      display:grid;grid-template-columns:1fr 1fr;gap:14px
+    }
+    .card{
+      background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 14px
+    }
+    .card h4{margin:0 0 6px;font-size:16px}
+    .muted{color:var(--muted)}
+    .kbd{
+      border:1px solid var(--border);border-bottom-width:2px;border-radius:6px;padding:1px 6px;
+      background:#0f1731;color:#dbe6ff;font-size:12px
+    }
+    table{
+      width:100%;border-collapse:collapse;margin:12px 0 16px;
+      border:1px solid var(--border);border-radius:10px;overflow:hidden
+    }
+    th,td{
+      text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top
+    }
+    th{background:#14214a;font-size:13px}
+    tr:last-child td{border-bottom:none}
+    .method{
+      display:inline-block;font-weight:700;font-size:12px;padding:2px 8px;border-radius:999px;margin-right:8px
+    }
+    .get{background:rgba(46,204,113,.16);color:#8ef2b2;border:1px solid rgba(46,204,113,.4)}
+    .post{background:rgba(112,161,255,.16);color:#b7ceff;border:1px solid rgba(112,161,255,.45)}
+    .put{background:rgba(241,196,15,.15);color:#ffe082;border:1px solid rgba(241,196,15,.45)}
+    .del{background:rgba(255,107,107,.14);color:#ffb2b2;border:1px solid rgba(255,107,107,.45)}
+    pre{
+      margin:10px 0;padding:14px;border-radius:10px;overflow:auto;
+      background:var(--code);border:1px solid var(--border);line-height:1.45
+    }
+    .path{font-size:18px;font-weight:700;margin:8px 0}
+    .endpoint{
+      margin:18px 0 26px;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--panel)
+    }
+    .response-code{font-weight:700}
+    .ok{color:var(--ok)} .warn{color:var(--warn)} .err{color:var(--err)}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .footer{
+      margin-top:40px;border-top:1px solid var(--border);padding-top:18px;color:var(--muted)
+    }
+    .small{font-size:13px}
+    .toc-help{
+      margin-top:20px;font-size:12px;color:var(--muted)
+    }
+    @media (max-width: 980px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{position:relative;height:auto}
+      .grid,.two-col{grid-template-columns:1fr}
+      .main{padding-top:10px}
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>ExpensiveSaaS API</h1>
+          <span class="version">v2.4</span>
+        </div>
+      </div>
+
+      <div class="search">
+        <input type="text" placeholder="Search docs (Ctrl + K)" />
+      </div>
+
+      <nav class="nav">
+        <h4>Getting Started</h4>
+        <a href="#overview">Overview</a>
+        <a href="#base-url">Base URL</a>
+        <a href="#auth">Authentication</a>
+        <a href="#headers">Headers</a>
+        <a href="#idempotency">Idempotency</a>
+        <a href="#limits">Rate Limits</a>
+
+        <h4>Core APIs</h4>
+        <a href="#customers">Customers</a>
+        <a href="#projects">Projects</a>
+        <a href="#usage">Usage Events</a>
+        <a href="#invoices">Invoices</a>
+        <a href="#payments">Payments</a>
+        <a href="#subscriptions">Subscriptions</a>
+
+        <h4>Advanced</h4>
+        <a href="#filtering">Filtering & Pagination</a>
+        <a href="#webhooks">Webhooks</a>
+        <a href="#errors">Errors</a>
+        <a href="#versioning">Versioning</a>
+        <a href="#sdk">SDKs</a>
+
+        <h4>Appendix</h4>
+        <a href="#changelog">Changelog</a>
+        <a href="#status-codes">HTTP Status Codes</a>
+        <a href="#examples">End-to-End Example</a>
+      </nav>
+
+      <p class="toc-help">Tip: Press <span class="kbd">Ctrl</span> + <span class="kbd">K</span> to jump to search.</p>
+    </aside>
+
+    <main class="main">
+      <section class="hero" id="overview">
+        <h2>ExpensiveSaaS API Documentation</h2>
+        <p>
+          The ExpensiveSaaS API lets you manage enterprise-grade billing, usage metering, contract lifecycle, and
+          revenue workflows. This is a summary of the most used methods: for a complete API documentation, see 
+          <a href="docs">this link</a>.
+        </p>
+        <div class="chips">
+          <span class="chip">REST + JSON</span>
+          <span class="chip">Server-to-server</span>
+          <span class="chip">Webhook-driven</span>
+          <span class="chip">Idempotent writes</span>
+          <span class="chip">Cursor pagination</span>
+        </div>
+        <div class="note">
+          <strong>Note:</strong> This is a summary of the most used methods: for the complete API documentation, see  <a href="docs">the API docs</a>.
+        </div>
+      </section>
+
+      <h2 class="section" id="auth">Authentication</h2>
+      <p>
+        ExpensiveSaaS uses Bearer token authentication. Create API keys in the Dashboard under
+        <em>Developers → API Keys</em>.
+      </p>
+      <div class="grid">
+        <div class="card">
+          <h4>Scopes</h4>
+          <p class="muted">
+            Keys can be scoped to <code>read:*</code>, <code>write:billing</code>, <code>write:customers</code>,
+            or narrowed to specific projects.
+          </p>
+        </div>
+        <div class="card">
+          <h4>Rotation</h4>
+          <p class="muted">
+            Rotate keys every 90 days. Overlap old/new keys briefly to avoid downtime during deployment.
+          </p>
+        </div>
+      </div>
+
+      <h2 class="section" id="headers">Required & Recommended Headers</h2>
+      <table>
+        <thead>
+          <tr><th>Header</th><th>Required</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>Authorization</code></td>
+            <td>Yes</td>
+            <td>Bearer API key</td>
+          </tr>
+          <tr>
+            <td><code>Content-Type</code></td>
+            <td>For request bodies</td>
+            <td>Use <code>application/json</code></td>
+          </tr>
+          <tr>
+            <td><code>Accept</code></td>
+            <td>Recommended</td>
+            <td>Use <code>application/json</code></td>
+          </tr>
+          <tr>
+            <td><code>X-Request-Id</code></td>
+            <td>Recommended</td>
+            <td>Client-generated identifier for request tracing</td>
+          </tr>
+          <tr>
+            <td><code>Idempotency-Key</code></td>
+            <td>For POST/PUT writes</td>
+            <td>Safe retries for network failures</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section" id="idempotency">Idempotency</h2>
+      <p>
+        For write operations, send an <code>Idempotency-Key</code> header (UUID recommended). The first
+        successful request for a key is persisted for 24 hours. Retries with the same key return the same status/body.
+      </p>
+      <pre>Idempotency-Key: 7f5c0d49-4724-4e94-a118-d2f3d1d410f3</pre>
+
+      <h2 class="section" id="limits">Rate Limits</h2>
+      <p>Rate limiting is enforced per key and endpoint group.</p>
+      <table>
+        <thead><tr><th>Plan</th><th>Default Limit</th><th>Burst</th></tr></thead>
+        <tbody>
+          <tr><td>Starter</td><td>120 req/min</td><td>30 req/10s</td></tr>
+          <tr><td>Growth</td><td>600 req/min</td><td>120 req/10s</td></tr>
+          <tr><td>Enterprise</td><td>Custom</td><td>Custom</td></tr>
+        </tbody>
+      </table>
+      <p class="muted">
+        Rate-limit headers: <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code>, <code>X-RateLimit-Reset</code>.
+      </p>
+
+      <h2 class="section" id="customers">Customers API</h2>
+
+      <article class="endpoint">
+        <div class="path"><span class="method post">POST</span>/customers</div>
+        <p>Create a customer record used for subscriptions, invoices, and usage attribution.</p>
+        <h4>Request Body</h4>
+        <pre>{
+  "external_id": "crm_483920",
+  "name": "Northwind Robotics, Ltd.",
+  "email": "billing@northwind.example",
+  "currency": "EUR",
+  "billing_address": {
+    "line1": "Avenida Luísa Todi 201",
+    "city": "Setúbal",
+    "postal_code": "2900-452",
+    "country": "PT"
+  },
+  "metadata": {
+    "segment": "enterprise",
+    "sales_owner": "team-iberia"
+  }
+}</pre>
+        <h4>Response <span class="response-code ok">201</span></h4>
+        <pre>{
+  "id": "12345",
+  "status": "active",
+  "created_at": "2026-02-17T09:15:20Z"
+}</pre>
+      </article>
+
+      <article class="endpoint">
+        <div class="path"><span class="method get">GET</span>/customers/{id}</div>
+        <p>Fetch a single customer by ID.</p>
+        <h4>Response <span class="response-code ok">200</span></h4>
+        <pre>{
+  "id": "12345",
+  "external_id": "crm_483920",
+  "name": "Northwind Robotics, Ltd.",
+  "email": "billing@northwind.example",
+  "currency": "EUR",
+  "status": "active",
+  "delinquent": false
+}</pre>
+      </article>
+
+      <h2 class="section" id="projects">Projects API</h2>
+      <article class="endpoint">
+        <div class="path"><span class="method post">POST</span>/projects</div>
+        <p>
+          Projects model billable products or workspaces. Usage events are typically attached to projects.
+        </p>
+        <pre>{
+  "customer_id": "cus_01HZZ9VZ7PT9E8XDY1J3Y4A8Q3",
+  "name": "Vision OCR Pipeline",
+  "plan_code": "ent_metered_v3",
+  "region": "eu-west-1"
+}</pre>
+      </article>
+
+      <h2 class="section" id="usage">Usage Events API</h2>
+      <article class="endpoint">
+        <div class="path"><span class="method post">POST</span>/usage/events</div>
+        <p>
+          Ingest raw metering events. Events are immutable once accepted. Send dedupe keys to avoid double-counting.
+        </p>
+        <h4>Request Body</h4>
+        <pre>{
+  "project_id": "prj_01J0C8JK09VQ8Q2M9P2H2NE4WA",
+  "metric": "api_tokens",
+  "quantity": 9213,
+  "timestamp": "2026-02-17T09:22:00Z",
+  "dedupe_key": "evt_3c4f2f55-f525-45f0-b63b-0eeea0fcb5d3",
+  "dimensions": {
+    "model": "xlarge-vision",
+    "environment": "production"
+  }
+}</pre>
+        <h4>Response <span class="response-code ok">202</span></h4>
+        <pre>{
+  "accepted": true,
+  "event_id": "usg_01J0C8P07Y9W7A75VYMNQJ4KP0",
+  "ingestion_lag_ms": 147
+}</pre>
+      </article>
+
+      <h2 class="section" id="invoices">Invoices API</h2>
+      <article class="endpoint">
+        <div class="path"><span class="method post">POST</span>/invoices/preview</div>
+        <p>Generate a non-final invoice estimate for the current billing cycle.</p>
+        <pre>{
+  "customer_id": "12345",
+  "as_of": "2026-02-17T00:00:00Z",
+  "include_usage_until": "2026-02-16T23:59:59Z"
+}</pre>
+        <h4>Response <span class="response-code ok">200</span></h4>
+        <pre>{
+  "subtotal": 12290.45,
+  "tax": 2826.80,
+  "total": 15117.25,
+  "currency": "EUR",
+  "line_items": [
+    {"description": "Enterprise Platform Fee", "amount": 9999.00},
+    {"description": "Usage: api_tokens (13,829,400)", "amount": 2291.45}
+  ]
+}</pre>
+      </article>
+
+      <h2 class="section" id="payments">Payments API</h2>
+      <article class="endpoint">
+        <div class="path"><span class="method post">POST</span>/payments/intents</div>
+        <p>Create a payment intent to collect an invoice balance.</p>
+        <pre>{
+  "invoice_id": "inv_01J0CDQY4N4ZQ5Q6J6W8C3E2K9",
+  "amount": 15117.25,
+  "currency": "EUR",
+  "payment_method": "card_on_file"
+}</pre>
+      </article>
+
+      <h2 class="section" id="subscriptions">Subscriptions API</h2>
+      <article class="endpoint">
+        <div class="path"><span class="method put">PUT</span>/subscriptions/{id}</div>
+        <p>Modify plan, seat count, or renewal settings. Proration behavior is explicit.</p>
+        <pre>{
+  "plan_code": "ent_metered_v4",
+  "seats": 230,
+  "proration_mode": "prorate_immediately",
+  "renewal_term_months": 12
+}</pre>
+      </article>
+
+      <h2 class="section" id="filtering">Filtering, Sorting & Pagination</h2>
+      <p>
+        List endpoints use cursor pagination. Pass <code>limit</code> (1–200) and <code>starting_after</code>.
+      </p>
+      <pre>GET /invoices?customer_id=12345...&status=open&sort=-created_at&limit=50&starting_after=inv_01...</pre>
+      <table>
+        <thead><tr><th>Parameter</th><th>Type</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>limit</code></td><td>integer</td><td>Page size</td></tr>
+          <tr><td><code>starting_after</code></td><td>string</td><td>Cursor token from previous page</td></tr>
+          <tr><td><code>sort</code></td><td>string</td><td><code>created_at</code> or <code>-created_at</code></td></tr>
+          <tr><td><code>status</code></td><td>string</td><td>Resource-specific status filter</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section" id="webhooks">Webhooks</h2>
+      <p>
+        Use webhooks for asynchronous events such as invoice finalization, payment success/failure, or subscription renewal.
+      </p>
+      <div class="two-col">
+        <div class="card">
+          <h4>Common Events</h4>
+          <ul>
+            <li><code>invoice.finalized</code></li>
+            <li><code>invoice.payment_succeeded</code></li>
+            <li><code>invoice.payment_failed</code></li>
+            <li><code>subscription.renewed</code></li>
+            <li><code>usage.threshold_exceeded</code></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Verification</h4>
+          <p class="muted">
+            Verify signatures using <code>X-ExpensiveSaaS-Signature</code> (HMAC-SHA256) over the raw request body.
+            Reject events older than 5 minutes to prevent replay attacks.
+          </p>
+        </div>
+      </div>
+      <h4>Example Webhook Payload</h4>
+      <pre>{
+  "id": "wh_01J0D1R1T5M8K9H3AA4JPHV2M1",
+  "type": "invoice.payment_succeeded",
+  "created_at": "2026-02-17T10:01:09Z",
+  "data": {
+    "invoice_id": "inv_01J0CDQY4N4ZQ5Q6J6W8C3E2K9",
+    "customer_id": "12345",
+    "amount_paid": 15117.25,
+    "currency": "EUR"
+  }
+}</pre>
+
+      <h2 class="section" id="errors">Error Model</h2>
+      <p>Errors are returned as structured JSON with machine-readable codes.</p>
+      <pre>{
+  "error": {
+    "type": "invalid_request_error",
+    "code": "invalid_parameter",
+    "message": "Field `currency` must be a valid ISO 4217 code.",
+    "param": "currency",
+    "request_id": "req_01J0D2F3YF15K9R1Q95Q1Z5AFW",
+  }
+}</pre>
+
+      <h2 class="section" id="versioning">Versioning Policy</h2>
+      <p>
+        The API is versioned in the URL path (<code>/v2</code>). Non-breaking changes may be introduced without a major
+        version bump (e.g., adding optional fields). Breaking changes require a new major path.
+      </p>
+      <ul>
+        <li>Deprecations announced at least 180 days in advance</li>
+        <li>Legacy versions receive security patches for 12 months</li>
+        <li>Response fields are never removed without migration path</li>
+      </ul>
+
+      <h2 class="section" id="status-codes">HTTP Status Codes</h2>
+      <table>
+        <thead><tr><th>Code</th><th>Meaning</th><th>Typical Cause</th></tr></thead>
+        <tbody>
+          <tr><td class="ok">200</td><td>OK</td><td>Successful read/update</td></tr>
+          <tr><td class="ok">201</td><td>Created</td><td>Resource created</td></tr>
+          <tr><td class="ok">202</td><td>Accepted</td><td>Asynchronous processing started</td></tr>
+          <tr><td class="warn">400</td><td>Bad Request</td><td>Validation error or malformed payload</td></tr>
+          <tr><td class="warn">401</td><td>Unauthorized</td><td>Missing/invalid API key</td></tr>
+          <tr><td class="warn">403</td><td>Forbidden</td><td>Scope insufficient</td></tr>
+          <tr><td class="warn">404</td><td>Not Found</td><td>Unknown resource ID</td></tr>
+          <tr><td class="warn">409</td><td>Conflict</td><td>State conflict or duplicate external ID</td></tr>
+          <tr><td class="warn">422</td><td>Unprocessable Entity</td><td>Business-rule violation</td></tr>
+          <tr><td class="err">429</td><td>Too Many Requests</td><td>Rate limit exceeded</td></tr>
+          <tr><td class="err">500</td><td>Internal Server Error</td><td>Unexpected backend issue</td></tr>
+          <tr><td class="err">503</td><td>Service Unavailable</td><td>Maintenance or transient outage</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section" id="changelog">Changelog</h2>
+      <div class="card">
+        <p><strong>2026-02-10</strong> — Added <code>usage.threshold_exceeded</code> webhook event.</p>
+        <p><strong>2026-01-19</strong> — Introduced <code>proration_mode</code> for subscription updates.</p>
+        <p><strong>2025-12-02</strong> — Launched <code>/invoices/preview</code> endpoint.</p>
+        <p><strong>2025-10-28</strong> — Increased max <code>limit</code> from 100 to 200 on list endpoints.</p>
+      </div>
+
+      <div class="footer small">
+        <p>
+          © 2026 ExpensiveSaaS, Inc.
+        </p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
